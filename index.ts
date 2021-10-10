@@ -6,10 +6,11 @@ const { promisify } = require('util');
 
 const app = express()
 
-const client = redis.createClient({
-    host: '127.0.0.1',
-    port: 8081
-})
+const client = redis.createClient(process.env.REDIS_URL, {
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 const GET_ASYNC = promisify(client.get).bind(client);
 const SET_ASYNC = promisify(client.set).bind(client);
