@@ -5,6 +5,7 @@ const responseTime = require('response-time');
 const { promisify } = require('util');
 
 const app = express()
+const port = process.env.PORT || 3000
 
 const client = redis.createClient({
     host: "ec2-52-5-212-47.compute-1.amazonaws.com"
@@ -66,4 +67,6 @@ app.get('/character/:id', async (req:any, res:any, next:any) => {
     }
 })
 
-app.listen(3000, console.log('server listen on port 3000'))
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
