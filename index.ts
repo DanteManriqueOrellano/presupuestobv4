@@ -10,7 +10,10 @@ const client = redis.createClient({
     host: "ec2-52-5-212-47.compute-1.amazonaws.com"
     ,port: 23120
     ,password:"p084e82949e443be46868bb05142b8b5443c90f2b55c954adbeec014ec7227672"
-    ,detect_buffers: true
+    ,detect_buffers: true,
+    tls: {
+        rejectUnauthorized: false
+    }
 })
 .on('error', function (err:any) {
     console.error(err);
