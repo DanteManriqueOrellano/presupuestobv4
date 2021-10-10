@@ -6,11 +6,18 @@ const { promisify } = require('util');
 
 const app = express()
 
-const client = redis.createClient(process.env.REDIS_URL, {
-    tls: {
-        rejectUnauthorized: false
-    }
-});
+const client = redis.createClient({
+    host: "ec2-52-5-212-47.compute-1.amazonaws.com"
+    ,port: 23120
+    ,password:"p084e82949e443be46868bb05142b8b5443c90f2b55c954adbeec014ec7227672"
+    ,detect_buffers: true
+})
+.on('error', function (err:any) {
+    console.error(err);
+  })
+  .on('connect', function () {
+    console.debug('Redis connected ');
+  });
 
 const GET_ASYNC = promisify(client.get).bind(client);
 const SET_ASYNC = promisify(client.set).bind(client);
