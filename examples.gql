@@ -1,5 +1,5 @@
 query FirstRecipe {
-  recipe(id:"1") {
+  recipe(id:"2") {
     title
     description
     comments {

@@ -7,7 +7,9 @@ import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
 import { createServer } from 'http';
 import { RecipeResolver } from "./recipe.resolver";
+import { SampleResolver } from "./resolver";
 const port = process.env.PORT || 3000
+const { Server } = require('ws');
 /*const express = require('express')
 const axios = require('axios')
 const redis = require('redis')
@@ -119,27 +121,42 @@ async function bootstrap(){
         logger: {
             warn: (...args) => console.warn(...args),
             error: (...args) => console.error(...args)
-        }
+        },
+
       });
     const schema = buildSchema({
-        resolvers : [RecipeResolver],
+        resolvers : [RecipeResolver,SampleResolver],
         validate:false,
         pubSub
+        
+
     })
     const apolloServer = new ApolloServer({ 
         schema: await schema,
         
+        
+        
     })
     
     const app = express()
-    
-
     await apolloServer.start()
     apolloServer.applyMiddleware({ app })
     
     app.listen(port, () => {
         console.log(`Example app listening at http://localhost:${port}`)
     })
+    const wss = new Server({ app });
+
+wss.on('connection', (ws:any) => {
+  console.log('Client connected');
+  ws.on('close', () => console.log('Client disconnected'));
+});
+
+setInterval(() => {
+  wss.clients.forEach((client:any) => {
+    client.send(new Date().toTimeString());
+  });
+}, 1000);
 
 
 }
