@@ -1,8 +1,21 @@
-const express = require('express')
+import "reflect-metadata";
+import { ApolloServer } from "apollo-server-express";
+import express from "express";
+import { buildSchema, Query, Resolver } from 'type-graphql'
+
+import IORedis from 'ioredis'
+import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
+import { createServer } from 'http';
+import { RecipeResolver } from "./recipe.resolver";
+const port = process.env.PORT || 3000
+/*const express = require('express')
 const axios = require('axios')
 const redis = require('redis')
 const responseTime = require('response-time');
 const { promisify } = require('util');
+
+
+
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -70,3 +83,68 @@ app.get('/character/:id', async (req:any, res:any, next:any) => {
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
+*/
+
+@Resolver()
+export class Tic{
+    @Query(()=>String)
+    tic():string{
+        return "toc"
+
+    }
+
+}
+
+async function bootstrap(){
+    const options: IORedis.RedisOptions = {
+        host: "ec2-52-5-212-47.compute-1.amazonaws.com",
+        port: 23120,
+        password:"p084e82949e443be46868bb05142b8b5443c90f2b55c954adbeec014ec7227672",
+        retryStrategy: times => Math.max(times * 100, 3000),
+        tls: {
+            rejectUnauthorized: false
+        },
+        
+      };
+    const pubSub = new RedisPubSubEngine({
+        pub: new IORedis(options),
+        sub: new IORedis(options),
+        /* optional */
+        // defaults to JSON
+        parser: {
+            stringify: (val) => JSON.stringify(val),
+            parse: (str) => JSON.parse(str)
+        },
+        // defaults to console
+        logger: {
+            warn: (...args) => console.warn(...args),
+            error: (...args) => console.error(...args)
+        }
+      });
+    const schema = buildSchema({
+        resolvers : [RecipeResolver],
+        validate:false,
+        pubSub
+    })
+    const apolloServer = new ApolloServer({ 
+        schema: await schema,
+        
+    })
+    
+    const app = express()
+    
+
+    await apolloServer.start()
+    apolloServer.applyMiddleware({ app })
+    
+    app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`)
+    })
+
+
+}
+ 
+bootstrap()
+
+
+
