@@ -2,14 +2,14 @@ import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema, Query, Resolver } from 'type-graphql'
-
 import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
-import { createServer } from 'http';
 import { RecipeResolver } from "./recipe.resolver";
 import { SampleResolver } from "./resolver";
+import WebSocket from "ws";
 const port = process.env.PORT || 3000
 const http = require('http');
+//const { Server } = require('ws');
 /*const express = require('express')
 const axios = require('axios')
 const redis = require('redis')
@@ -96,8 +96,9 @@ export class Tic{
     }
 
 }
-
+const app = express()
 async function bootstrap(){
+    
     const options: IORedis.RedisOptions = {
         host: "ec2-52-5-212-47.compute-1.amazonaws.com",
         port: 23120,
@@ -106,6 +107,7 @@ async function bootstrap(){
         tls: {
             rejectUnauthorized: false
         },
+        
         
       };
     const pubSub = new RedisPubSubEngine({
@@ -134,8 +136,9 @@ async function bootstrap(){
     const apolloServer = new ApolloServer({ 
         schema: await schema,
         subscriptions: {
-            onConnect: async (connectionParams, wss) => {
-                wss.on('connection', (ws) => {
+            onConnect: async (connectionParams, webSocket) => {
+                
+                webSocket.on('connection', (ws:WebSocket) => {
                     console.log('Client connected');
                     ws.on('close', () => console.log('Client disconnected'));
                   });
@@ -150,9 +153,9 @@ async function bootstrap(){
         
     })
     
-    const app = express()
+   
     const httpServer = http.createServer(app);
-    await apolloServer.start()
+    //await apolloServer.start()
     apolloServer.applyMiddleware({app})
     apolloServer.installSubscriptionHandlers(httpServer)
     
