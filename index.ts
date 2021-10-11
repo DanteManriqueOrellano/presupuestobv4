@@ -9,7 +9,7 @@ import { createServer } from 'http';
 import { RecipeResolver } from "./recipe.resolver";
 import { SampleResolver } from "./resolver";
 const port = process.env.PORT || 3000
-const { Server } = require('ws');
+const http = require('http');
 /*const express = require('express')
 const axios = require('axios')
 const redis = require('redis')
@@ -133,31 +133,36 @@ async function bootstrap(){
     })
     const apolloServer = new ApolloServer({ 
         schema: await schema,
+        subscriptions: {
+            onConnect: async (connectionParams, webSocket) => {
+              console.log('xxx');
+              console.log(connectionParams);
+            },
+          },
         
         
         
     })
     
     const app = express()
+    const httpServer = http.createServer(app);
     await apolloServer.start()
-    apolloServer.applyMiddleware({ app })
+    apolloServer.applyMiddleware({app})
+    apolloServer.installSubscriptionHandlers(httpServer)
     
-    app.listen(port, () => {
+    /*app.listen(port, () => {
         console.log(`Example app listening at http://localhost:${port}`)
-    })
-    const wss = new Server({ app });
+    })*/
 
-wss.on('connection', (ws:any) => {
-  console.log('Client connected');
-  ws.on('close', () => console.log('Client disconnected'));
-});
-
-setInterval(() => {
-  wss.clients.forEach((client:any) => {
-    client.send(new Date().toTimeString());
-  });
-}, 1000);
-
+    httpServer.listen(port, () => {
+        console.log(
+          `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`,
+        );
+        console.log(
+          `🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`,
+        );
+    });
+    
 
 }
  
