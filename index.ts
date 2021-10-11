@@ -134,11 +134,17 @@ async function bootstrap(){
     const apolloServer = new ApolloServer({ 
         schema: await schema,
         subscriptions: {
-            onConnect: async (connectionParams, webSocket) => {
+            onConnect: async (connectionParams, wss) => {
+                wss.on('connection', (ws) => {
+                    console.log('Client connected');
+                    ws.on('close', () => console.log('Client disconnected'));
+                  });
               console.log('xxx');
               console.log(connectionParams);
             },
+            path:"/graphql"
           },
+        
         
         
         
