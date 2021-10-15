@@ -6,11 +6,11 @@ import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
 import { RecipeResolver } from "./recipe.resolver";
 import { SampleResolver } from "./resolver";
-import WebSocket from "ws";
+
 const port = process.env.PORT || 3000
 const con = process.env.REDIS_TLS_URL
-const https = require('https');
-//require('dotenv').config()
+const http = require('http');
+
 @Resolver()
 export class Tic{
     @Query(()=>String)
@@ -79,7 +79,7 @@ async function bootstrap(){
     })
     
    
-    const httpServer = https.createServer(app);
+    const httpServer = http.createServer(app);
     apolloServer.applyMiddleware({app})
     apolloServer.installSubscriptionHandlers(httpServer)
     
