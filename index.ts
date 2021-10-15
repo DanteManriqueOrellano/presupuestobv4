@@ -9,7 +9,7 @@ import { SampleResolver } from "./resolver";
 import WebSocket from "ws";
 const port = process.env.PORT || 3000
 const con = process.env.REDIS_TLS_URL
-const http = require('http');
+const https = require('https');
 //require('dotenv').config()
 @Resolver()
 export class Tic{
@@ -25,9 +25,6 @@ async function bootstrap(){
     
     const options: IORedis.RedisOptions = {
         
-        /*host: "ec2-52-5-212-47.compute-1.amazonaws.com",
-        port: 23120,
-        password:"p084e82949e443be46868bb05142b8b5443c90f2b55c954adbeec014ec7227672",*/
         retryStrategy: times => Math.max(times * 100, 3000),
         tls: {
             rejectUnauthorized: false
@@ -63,14 +60,15 @@ async function bootstrap(){
         subscriptions: {
             onConnect: async (connectionParams, webSocket) => {
                 
-                webSocket.on('connection', (ws:WebSocket) => {
+                webSocket.on('connection', (wss) => {
                     console.log('Client connected');
-                    ws.on('close', () => console.log('Client disconnected'));
+                    wss.on('close', () => console.log('Client disconnected'));
                   });
               console.log('xxx');
               console.log(connectionParams);
             },
-            path:"/graphql"
+            path:"/graphql",
+            
           },
           playground:true,
           introspection:true
@@ -81,15 +79,11 @@ async function bootstrap(){
     })
     
    
-    const httpServer = http.createServer(app);
-    //await apolloServer.start()
+    const httpServer = https.createServer(app);
     apolloServer.applyMiddleware({app})
     apolloServer.installSubscriptionHandlers(httpServer)
     
-    /*app.listen(port, () => {
-        console.log(`Example app listening at http://localhost:${port}`)
-    })*/
-
+   
     httpServer.listen(port, () => {
         console.log(
           `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`,
