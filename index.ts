@@ -9,7 +9,7 @@ import { SampleResolver } from "./resolver";
 
 const port = process.env.PORT || 3000
 const con = process.env.REDIS_TLS_URL
-const http = require('http');
+const http = require('https');
 
 @Resolver()
 export class Tic{
@@ -80,7 +80,7 @@ async function bootstrap(){
     
    
     const httpServer = http.createServer(app);
-    apolloServer.applyMiddleware({app})
+    apolloServer.applyMiddleware({app,path:"/graphql"})
     apolloServer.installSubscriptionHandlers(httpServer)
     
    
