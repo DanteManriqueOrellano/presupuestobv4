@@ -6,11 +6,13 @@ import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
 import { RecipeResolver } from "./recipe.resolver";
 import { SampleResolver } from "./resolver";
+import WebSocket from "ws";
+
 
 const port = process.env.PORT || 3000
-const con = process.env.REDIS_TLS_URL
-const http = require('https');
 
+const http = require('http');
+ 
 @Resolver()
 export class Tic{
     @Query(()=>String)
@@ -22,6 +24,9 @@ export class Tic{
 }
 const app = express()
 async function bootstrap(){
+    const httpServer = http.createServer();
+
+    var io = require('socket.io')(httpServer);
     
     const options: IORedis.RedisOptions = {
         
@@ -32,6 +37,7 @@ async function bootstrap(){
         
         
       };
+
     const pubSub = new RedisPubSubEngine({
         pub: new IORedis(process.env.REDIS_TLS_URL,options),
         sub: new IORedis(process.env.REDIS_TLS_URL,options),
@@ -47,7 +53,8 @@ async function bootstrap(){
             error: (...args) => console.error(...args)
         },
 
-      });
+    });
+
     const schema = buildSchema({
         resolvers : [RecipeResolver,SampleResolver],
         validate:false,
@@ -55,35 +62,38 @@ async function bootstrap(){
         
 
     })
+
     const apolloServer = new ApolloServer({ 
         schema: await schema,
         subscriptions: {
-            onConnect: async (connectionParams, webSocket) => {
+            onConnect: async (connectionParams, webSocket:WebSocket) => {
                 
                 webSocket.on('connection', (wss) => {
                     console.log('Client connected');
                     wss.on('close', () => console.log('Client disconnected'));
-                  });
-              console.log('xxx');
-              console.log(connectionParams);
+                });
+
+                console.log('xxx');
+                console.log(connectionParams);
+                console.log(webSocket)
+            },
+            onDisconnect :async (con,web)=>{
+                console.log(con)
+                console.log(web)
             },
             path:"/graphql",
             
-          },
-          playground:true,
-          introspection:true
-        
-        
-        
-        
-    })
+        },
+        playground:true,
+        introspection:true
+    });
     
-   
-    const httpServer = http.createServer(app);
+    
     apolloServer.applyMiddleware({app,path:"/graphql"})
     apolloServer.installSubscriptionHandlers(httpServer)
     
-   
+
+    
     httpServer.listen(port, () => {
         console.log(
           `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`,
@@ -93,10 +103,7 @@ async function bootstrap(){
         );
     });
     
-
 }
  
 bootstrap()
-
-
 
