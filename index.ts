@@ -1,32 +1,36 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
-import express from "express";
-import { buildSchema, Query, Resolver } from 'type-graphql'
+import express, { NextFunction, Response, Request }   from "express";
+import { buildSchema } from 'type-graphql'
 import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
 import { RecipeResolver } from "./recipe.resolver";
 import { SampleResolver } from "./resolver";
 import WebSocket from "ws";
+const fs = require('fs');
+import {  DataSource } from "apollo-datasource";
+
 
 
 const port = process.env.PORT || 3000
 
 const http = require('http');
  
-@Resolver()
-export class Tic{
-    @Query(()=>String)
-    tic():string{
-        return "toc"
-
-    }
-
-}
 const app = express()
-async function bootstrap(){
-    const httpServer = http.createServer();
 
-    var io = require('socket.io')(httpServer);
+async function bootstrap(){
+    const optionshttps = {
+        key: fs.readFileSync('./key.pem'),
+        cert: fs.readFileSync('./cert.pem')
+      };
+    const httpServer = http.createServer(optionshttps,(req:Request,res:Response)=>{
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          data: 'Hello World!'
+        }));
+    });
+
+    
     
     const options: IORedis.RedisOptions = {
         
@@ -68,12 +72,10 @@ async function bootstrap(){
         subscriptions: {
             onConnect: async (connectionParams, webSocket:WebSocket) => {
                 
-                webSocket.on('connection', (wss) => {
+                webSocket.on('connection', (ws) => {
                     console.log('Client connected');
-                    wss.on('close', () => console.log('Client disconnected'));
+                    ws.on('close', () => console.log('Client disconnected'));
                 });
-
-                console.log('xxx');
                 console.log(connectionParams);
                 console.log(webSocket)
             },
@@ -85,15 +87,35 @@ async function bootstrap(){
             
         },
         playground:true,
-        introspection:true
+        introspection:true,
+        formatError: (err) => {
+            // Don't give the specific errors to the client.
+            if (err.message.startsWith('Database Error: ')) {
+                return new Error('Internal server error')
+            }
+            return err
+        },
     });
     
     
     apolloServer.applyMiddleware({app,path:"/graphql"})
     apolloServer.installSubscriptionHandlers(httpServer)
-    
+    app.get("/admin",(req: Request, res: Response, next: NextFunction)=>{
 
-    
+        try {
+
+            res
+			.status(200)
+			.set('Content-Type', 'text/plain')
+			.send(`Last 10 visits:${req.ip}`)
+			.end()
+
+        } catch(error) {
+            console.log(error)
+		    next(error)
+        }
+
+    })
     httpServer.listen(port, () => {
         console.log(
           `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`,
