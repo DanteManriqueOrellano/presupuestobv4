@@ -23,12 +23,7 @@ async function bootstrap(){
         key: fs.readFileSync('./key.pem'),
         cert: fs.readFileSync('./cert.pem')
       };
-    const httpServer = http.createServer(optionshttps,(req:Request,res:Response)=>{
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          data: 'Hello World!'
-        }));
-    });
+    const httpServer = http.createServer(optionshttps);
 
     
     
