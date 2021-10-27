@@ -5,9 +5,11 @@ import { Collection, getRepository } from "fireorm";
 import express from 'express';
 import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
-import { BaseCrud } from '../datastore';
 import { EInsumo } from '../graphql/insumo/models/insumoModel';
 import { InsumoCrud } from '../graphql/insumo/services/insumoCrud';
+import { UsuarioCrud } from '../graphql/usuario/service/usuarioCrud';
+import { UsuarioModel } from '../graphql/usuario/indexModels';
+import Container from 'typedi';
 
 export default async ({ app, resolvers }: { app: express.Application; resolvers: any }) => {
 
@@ -61,11 +63,8 @@ export default async ({ app, resolvers }: { app: express.Application; resolvers:
             return err
         },
 
-        dataSources: () => (
-            {
-                insumo: new InsumoCrud(EInsumo),
+        dataSources: () => (Container.get('mysource')),
 
-            }),
        /* subscriptions: {
             onConnect: async (connectionParams, webSocket) => {
 

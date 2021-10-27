@@ -17,11 +17,15 @@ export default async ({ expressApp }: any) => {
 
     const resolvers = require('../graphql/mainResolver').default//Insumo
     const models = require('../graphql/mainModels').default
-    
-    const { agenda } = await dependencyInjectorLoader({////es la inyeccion de dependencias de soooolo agenda, se abrira otro para ooootra dependencia.
+
+   
+    //inyecta las instancias de todos los modelos y los almacena en el objeto mysource
+    Container.set('mysource', await dependencyInjectorLoader({
         fireormConnection,
         models
-    })
+    }))
+    
+    
 
     
     await expressLoader({ app: expressApp });//las que no son clases que no se instancian se leen aca.

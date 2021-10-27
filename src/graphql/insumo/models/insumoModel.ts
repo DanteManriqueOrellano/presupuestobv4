@@ -29,7 +29,6 @@ registerEnumType(u_medida, {
 
 @ArgsType()
 @ObjectType()
-@InputType()
 @Collection('Insumo') //nombre personalizado de la coleccion
 export class EInsumo {
     @Field()

@@ -1,8 +1,10 @@
-import Animal from '../agenda/lib';
+//se va a instanciar los cruds
 
-export default (valorNombre: string) => {
-    return new Animal({
-        name: valorNombre,
+import { InsumoCrud } from "../graphql/insumo/services/insumoCrud";
 
-    })
+//import { InsumoCrud } from ""
+
+export default (model: any) => {
+    return new InsumoCrud(model)
+
 };

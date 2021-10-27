@@ -32,7 +32,7 @@ class Server {
 
         new Promise(resolve => {
 
-            resolve(require('./loaders').default({ expressApp: this.app }));
+            resolve(require('./src/loaders').default({ expressApp: this.app }));
         }).then(() => {
 
             this.resolverServer()
