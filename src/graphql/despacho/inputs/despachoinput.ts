@@ -1,12 +1,14 @@
 import { ISubCollection, SubCollection } from "fireorm";
-import { ArgsType, Field, ID, InputType } from "type-graphql";
+import { ArgsType, Field, ID, InputType, Int, ObjectType } from "type-graphql";
+import { DespachoInsumoModel } from "../models/despachoinsumoModel";
+import { DespachoInsumoInput } from "./despachoinsumoInput";
 
 
 
 
 
 
-
+@ObjectType('despachoinput')
 @ArgsType()
 @InputType()
 export class DespachoInput {
@@ -20,6 +22,7 @@ export class DespachoInput {
     fechaPedido: string;
     @Field()
     fechaDespacho: string
+    @Field(type =>  [DespachoInsumoInput])
+    despachoinsumo: DespachoInsumoInput[]
 
-   
 }

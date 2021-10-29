@@ -1,7 +1,8 @@
 import { Arg, Args, ArgsType, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { IDespachoContext } from "../context/despachocontext";
 import { DespachoInput } from "../inputs/despachoinput";
-import { DespachoModel } from "../models/despachomodel";
+import { DespachoInsumoModel } from "../models/despachoinsumoModel";
+import { DespachoModel } from "../models/despachoModel";
 
 
 @Resolver()
@@ -13,7 +14,18 @@ export class DespachoResolver {
         @Ctx() context: IDespachoContext,
 
     ): Promise<DespachoModel> {
-        return await context.dataSources.despacho.create({ dataObj: undespacho })
+        const ot = undespacho.despachoinsumo.map((val) => {
+            return { id: val.id, insumo: val.insumo, cantidad: val.cantidad, umedida: val.umedida }
+
+        })
+
+        const ve = {
+            id: undespacho.id,
+            despachoinsumo: ot
+        }
+        console.log(ve)
+
+        return await context.dataSources.despacho.create({ dataObj: ve })
     }
     /*@Query(() => [DespachoModel])
     async listarDespachos(

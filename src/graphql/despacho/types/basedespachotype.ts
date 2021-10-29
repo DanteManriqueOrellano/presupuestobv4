@@ -1,5 +1,5 @@
 import { ObjectType } from "type-graphql";
-import { IBaseDespachoInterface } from "../interfaces/basedespachointerace";
+import { IBaseDespachoInterface } from "../interfaces/basedespacho.Interace";
 
 @ObjectType({ implements: IBaseDespachoInterface})
 export class BaseDespachoType implements IBaseDespachoInterface {

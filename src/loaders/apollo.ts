@@ -5,6 +5,7 @@ import { Collection, getRepository } from "fireorm";
 import express from 'express';
 import IORedis from 'ioredis'
 import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
+import { BaseCrud } from '../../datastore';
 import { EInsumo } from '../graphql/insumo/models/insumoModel';
 import { InsumoCrud } from '../graphql/insumo/services/insumoCrud';
 import { UsuarioCrud } from '../graphql/usuario/service/usuarioCrud';

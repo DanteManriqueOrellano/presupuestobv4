@@ -11,7 +11,7 @@ import express from 'express';
 import { ClassType, NonEmptyArray} from 'type-graphql'
 import { UsuarioModel } from '../graphql/usuario/indexModels';
 import { EInsumo } from '../graphql/insumo/indexModels';
-import { DespachoModel } from '../graphql/despacho/models/despachomodel';
+import { DespachoModel } from '../graphql/despacho/models/despachoModel';
 
 
 export default ({ fireormConnection, models }: { fireormConnection: any; models:  any  }) => {
