@@ -1,10 +1,8 @@
 import 'reflect-metadata';
 import { Container } from "typedi";
-import Animal from "../agenda/lib";
 import dependencyInjectorLoader from './dependencyInjector';
 import expressLoader from './express';
 import apolloLoader from './apollo'
-import express from 'express';
 import * as fireorm from 'fireorm';
 import fireormLoader from './fireorm';
 import { ApolloServer } from 'apollo-server-express';

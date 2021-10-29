@@ -1,29 +1,23 @@
 import 'reflect-metadata'
 import { ApolloServer} from "apollo-server-express";
-import { buildSchema, ClassType, NonEmptyArray, Query, Resolver, ArgsType, Field, InputType, ObjectType, registerEnumType, Args, Mutation, Arg } from 'type-graphql'
-import { Collection, getRepository } from "fireorm";
+import { buildSchema} from 'type-graphql'
+
 import express from 'express';
-import IORedis from 'ioredis'
-import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
-import { BaseCrud } from '../../datastore';
-import { EInsumo } from '../graphql/insumo/models/insumoModel';
-import { InsumoCrud } from '../graphql/insumo/services/insumoCrud';
-import { UsuarioCrud } from '../graphql/usuario/service/usuarioCrud';
-import { UsuarioModel } from '../graphql/usuario/indexModels';
+
 import Container from 'typedi';
 
 export default async ({ app, resolvers }: { app: express.Application; resolvers: any }) => {
 
 
-    const options: IORedis.RedisOptions = {
+   /* const options: IORedis.RedisOptions = {
         port: 6379,
         host: "localhost",
         
         retryStrategy: times => Math.max(times * 100, 4000),
-        /*tls: {
+        tls: {
             rejectUnauthorized: false,
             
-        },*/ //activar cuando se configure las subscripciones
+        }, //activar cuando se configure las subscripciones
         
 
 
@@ -44,7 +38,7 @@ export default async ({ app, resolvers }: { app: express.Application; resolvers:
             error: (...args) => console.error(...args)
         },
 
-    });
+    });*/
     const schemas: Promise<any> = buildSchema({
         resolvers: resolvers,
         validate: false,

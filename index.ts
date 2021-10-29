@@ -1,18 +1,8 @@
 import "reflect-metadata";
-//import express from 'express';
 import { ApolloServer } from "apollo-server-express";
-import express, { NextFunction, Response, Request } from "express";
-import { buildSchema, Query, Resolver } from 'type-graphql'
-import IORedis from 'ioredis'
-import RedisPubSubEngine from 'graphql-ioredis-subscriptions'
-import WebSocket from "ws";
-const fs = require('fs');
+import express from "express";
+import { NextFunction, Response, Request } from "express";
 import { Container } from 'typedi'
-import session from "express-session";
-import connectRedis from "connect-redis";
-import redis from "redis";
-
-
 const port = process.env.PORT || 3000
 
 const http = require('http');
@@ -28,7 +18,7 @@ class Server {
     constructor() {
         
         this.httpServer = http.createServer(this.app);
-        const RedisStore = connectRedis(session)
+       // const RedisStore = connectRedis(session)
 
         new Promise(resolve => {
 
